@@ -10,7 +10,7 @@ const app = new Hono();
 app.all(
   '*',
   cors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000'],
   })
 );
 
