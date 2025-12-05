@@ -4,7 +4,11 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "db-create": "prisma migrate dev --create-only",
+    "db-migrate": "prisma migrate dev",
+    "db-apply": "prisma migrate deploy",
+    "db-reset": "prisma migrate reset; tsx prisma/seed.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.6",
@@ -18,7 +22,7 @@
     "@types/pg": "^8.15.6",
     "dotenv": "^17.2.3",
     "prisma": "^7.1.0",
-    "tsx": "^4.7.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.8.3"
   }
 }
