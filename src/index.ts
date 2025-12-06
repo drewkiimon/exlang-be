@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 
 import postsRouter from './routes/posts.js';
 import { cors } from 'hono/cors';
+import authRouter from './routes/auth.js';
 
 const app = new Hono();
 
@@ -14,12 +15,17 @@ app.all(
   })
 );
 
-app.get('/hello', (c) => {
-  return c.json({
-    message: `Hello!`,
-  });
+app.use(async (c, next) => {
+  console.log(`[${c.req.method}] ${c.req.url}`);
+  // Example condition: Only allow requests with a custom header 'x-auth-token'
+  // const authToken = c.req.header('x-auth-token');
+  // if (!authToken) {
+  //   return c.json({ error: 'Unauthorized: missing x-auth-token' }, 401);
+  // }
+  await next();
 });
 
+app.route('/api/auth', authRouter);
 app.route('/api/posts', postsRouter);
 
 serve(

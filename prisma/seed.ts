@@ -1,4 +1,5 @@
 import type { Prisma } from '../generated/prisma/client';
+import { hashPassword } from '../src/services/authService';
 import { prisma } from './prisma';
 
 const users: Prisma.UserCreateInput[] = [
@@ -39,6 +40,7 @@ async function main() {
   console.log('\n🌱✨ Starting fancy Prisma seeding process! ✨🌱\n');
 
   console.log('🌱✨ Creating users... ✨🌱');
+
   const createdUsers = await prisma.user.createMany({
     data: users,
   });

@@ -17,28 +17,40 @@ model User {
   id   Int    @id @default(autoincrement())
   uuid String @unique @default(uuid())
 
-  firstName String @map("first_name")
-  lastName  String @map("last_name")
-  username  String @unique
-  email     String @unique
-  posts     Post[]
+  firstName      String     @map("first_name")
+  lastName       String     @map("last_name")
+  username       String     @unique
+  email          String     @unique
+  posts          Post[]
+  credential     Credential @relation(fields: [credentialUuid], references: [uuid])
+  credentialUuid String     @unique @map("credential_uuid")
 
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("users")
 }
 
-model Post {
-  id   Int    @id @default(autoincrement())
-  uuid String @unique @default(uuid())
+model Credential {
+  id             Int      @id @default(autoincrement())
+  uuid           String   @unique @default(uuid())
+  saltedPassword String   @map("salted_password")
+  salt           String
+  user           User?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
+  @@map("credentials")
+}
+
+model Post {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique @default(uuid())
   title      String?
   content    String
-  author     User    @relation(fields: [authorUuid], references: [uuid])
-  authorUuid String  @map("author_uuid")
-
-  updatedAt DateTime @updatedAt @map("updated_at")
-  createdAt DateTime @default(now()) @map("created_at")
+  author     User     @relation(fields: [authorUuid], references: [uuid])
+  authorUuid String   @map("author_uuid")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  createdAt  DateTime @default(now()) @map("created_at")
 
   @@index([createdAt])
   @@index([authorUuid, createdAt])

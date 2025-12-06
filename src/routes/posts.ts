@@ -18,6 +18,7 @@ postsRouter.post('/', async (c) => {
   const req = await c.req.json();
 
   const post = await createPost({
+    title: req.title,
     content: req.content,
     author: {
       connect: {
