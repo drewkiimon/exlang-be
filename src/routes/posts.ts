@@ -4,10 +4,6 @@ import { createPost, getPosts } from '@/services/postsService';
 const postsRouter = new Hono();
 
 postsRouter.get('/', async (c) => {
-  const jwtPayload = c.get('jwtPayload');
-
-  console.log('aaa jwtPayload', jwtPayload);
-
   const posts = await getPosts();
 
   return c.json(
@@ -20,13 +16,14 @@ postsRouter.get('/', async (c) => {
 
 postsRouter.post('/', async (c) => {
   const req = await c.req.json();
+  const jwtPayload = c.get('jwtPayload');
 
   const post = await createPost({
     title: req.title,
     content: req.content,
     author: {
       connect: {
-        uuid: '00000000-0000-0000-0000-000000000000',
+        uuid: jwtPayload.userUuid,
       },
     },
   });

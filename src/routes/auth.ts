@@ -34,7 +34,18 @@ authRouter.post('/sign-in', async (c) => {
     return c.json({ error: 'Invalid password' }, 401);
   }
 
-  return c.json({ token: 'meow' }, 200);
+  const token = await sign(
+    {
+      userUuid: user.uuid,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
+    },
+    JWT_SECRET
+  );
+
+  return c.json({ token }, 200);
 });
 
 authRouter.post('/sign-up', async (c) => {
@@ -68,13 +79,10 @@ authRouter.post('/sign-up', async (c) => {
     lastName,
   });
 
-  console.log(`User ${user.uuid} created`);
-
   const token = await sign(
     {
       userUuid: user.uuid,
       email: user.email,
-      username: user.username,
       firstName: user.firstName,
       lastName: user.lastName,
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
