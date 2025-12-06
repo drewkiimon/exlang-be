@@ -1,10 +1,41 @@
 import { Hono } from 'hono';
-import { prisma } from '../../prisma/prisma';
-import { createUser } from '@/services/authService';
+import { prisma } from '@prisma/prisma';
+import { createUser, isPasswordCorrect } from '@/services/authService';
 import { sign } from 'hono/jwt';
 import { JWT_SECRET } from '@/utils/secrets';
 
 const authRouter = new Hono();
+
+authRouter.post('/sign-in', async (c) => {
+  const { credentials } = await c.req.json();
+
+  const [username, password] = atob(credentials).split(':');
+
+  const user = await prisma.user.findUnique({
+    where: { username },
+    include: {
+      credential: true,
+    },
+  });
+
+  if (!user) {
+    console.log('User not found');
+    return c.json({ error: 'User not found' }, 404);
+  }
+
+  const isPasswordValid = isPasswordCorrect(
+    user.credential.saltedPassword,
+    user.credential.salt,
+    password
+  );
+
+  if (!isPasswordValid) {
+    console.log('Invalid password');
+    return c.json({ error: 'Invalid password' }, 401);
+  }
+
+  return c.json({ token: 'meow' }, 200);
+});
 
 authRouter.post('/sign-up', async (c) => {
   const { email, credentials, firstName, lastName } = await c.req.json();

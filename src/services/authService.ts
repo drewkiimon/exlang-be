@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { prisma } from '../../prisma/prisma';
+import { prisma } from '@prisma/prisma';
 
 export const generateUniqueSalt = async () => {
   let salt = crypto.randomBytes(128).toString('base64');

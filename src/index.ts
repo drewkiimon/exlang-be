@@ -5,6 +5,7 @@ import { jwt } from 'hono/jwt';
 
 import postsRouter from '@/routes/posts.js';
 import authRouter from '@/routes/auth.js';
+import { JWT_SECRET } from '@/utils/secrets';
 
 const app = new Hono();
 
@@ -22,7 +23,7 @@ app.route('/api/auth', authRouter);
 app
   .use(
     jwt({
-      secret: 'change_me_later_please',
+      secret: JWT_SECRET,
     })
   )
   .onError((err, c) => {
