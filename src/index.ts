@@ -4,6 +4,7 @@ import { Hono } from 'hono';
 import postsRouter from './routes/posts.js';
 import { cors } from 'hono/cors';
 import authRouter from './routes/auth.js';
+import { jwt, verify } from 'hono/jwt';
 
 const app = new Hono();
 
@@ -15,17 +16,19 @@ app.all(
   })
 );
 
-app.use(async (c, next) => {
-  console.log(`[${c.req.method}] ${c.req.url}`);
-  // Example condition: Only allow requests with a custom header 'x-auth-token'
-  // const authToken = c.req.header('x-auth-token');
-  // if (!authToken) {
-  //   return c.json({ error: 'Unauthorized: missing x-auth-token' }, 401);
-  // }
-  await next();
-});
-
 app.route('/api/auth', authRouter);
+
+// Below, you must be authenticated to access the routes
+app
+  .use(
+    jwt({
+      secret: 'change_me_later_please',
+    })
+  )
+  .onError((err, c) => {
+    return c.json({ error: 'Unauthorized' }, 401);
+  });
+
 app.route('/api/posts', postsRouter);
 
 serve(

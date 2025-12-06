@@ -1,15 +1,15 @@
 import { Hono } from 'hono';
 import { prisma } from '../../prisma/prisma';
 import { createUser } from '../services/authService';
+import { sign } from 'hono/jwt';
 
 const authRouter = new Hono();
 
 authRouter.post('/sign-up', async (c) => {
-  console.log('sign-up');
   const { email, credentials, firstName, lastName } = await c.req.json();
 
   const [username, password] = atob(credentials).split(':');
-  console.log('AAA', username, email);
+
   const existingUser = await prisma.user.findFirst({
     where: {
       OR: [
@@ -36,7 +36,21 @@ authRouter.post('/sign-up', async (c) => {
     lastName,
   });
 
-  return c.json({ message: 'User created' }, 201);
+  console.log(`User ${user.uuid} created`);
+
+  const token = await sign(
+    {
+      userUuid: user.uuid,
+      email: user.email,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
+    },
+    'change_me_later_please'
+  );
+
+  return c.json({ token }, 201);
 });
 
 export default authRouter;

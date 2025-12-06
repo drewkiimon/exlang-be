@@ -1,9 +1,14 @@
 import { Hono } from 'hono';
 import { createPost, getPosts } from '../services/postsService';
+import { verify } from 'hono/jwt';
 
 const postsRouter = new Hono();
 
 postsRouter.get('/', async (c) => {
+  const jwtPayload = c.get('jwtPayload');
+
+  console.log('aaa jwtPayload', jwtPayload);
+
   const posts = await getPosts();
 
   return c.json(

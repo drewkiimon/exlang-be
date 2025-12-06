@@ -20,6 +20,7 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.19.25",
     "@types/pg": "^8.15.6",
     "dotenv": "^17.2.3",
