@@ -1,15 +1,16 @@
 import { Hono } from 'hono';
 import { prisma } from '../../prisma/prisma';
+import { createUser } from '../services/authService';
 
 const authRouter = new Hono();
 
 authRouter.post('/sign-up', async (c) => {
   console.log('sign-up');
-  const { email, credentials } = await c.req.json();
+  const { email, credentials, firstName, lastName } = await c.req.json();
 
   const [username, password] = atob(credentials).split(':');
-
-  const existingUsers = await prisma.user.findMany({
+  console.log('AAA', username, email);
+  const existingUser = await prisma.user.findFirst({
     where: {
       OR: [
         {
@@ -21,25 +22,19 @@ authRouter.post('/sign-up', async (c) => {
       ],
     },
   });
+  const isExistingUser = !!existingUser;
 
-  console.log(email, username, password);
-
-  if (existingUsers.length > 0) {
+  if (isExistingUser) {
     return c.json({ error: 'User already exists' }, 400);
   }
 
-  //   const user = await prisma.user.create({
-  //     data: {
-  //       email,
-  //       username,
-  //       credential: {
-  //         create: {
-  //           saltedPassword: password,
-  //           salt: '1234',
-  //         },
-  //       },
-  //     },
-  //   });
+  const user = await createUser({
+    email,
+    username,
+    password,
+    firstName,
+    lastName,
+  });
 
   return c.json({ message: 'User created' }, 201);
 });
