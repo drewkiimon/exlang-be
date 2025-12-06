@@ -17,3 +17,4 @@ open http://localhost:3000
 ## Notes
 
 - Use DBeaver. It's dope
+  ![DBeaver settings](https://pub-43f6a9855bbc4ceea4a4145ad383e29c.r2.dev/dbeaver.png)
