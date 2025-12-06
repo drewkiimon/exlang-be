@@ -9,6 +9,11 @@ import { JWT_SECRET } from '@/utils/secrets';
 
 const app = new Hono();
 
+app.use('*', async (c, next) => {
+  console.log(`[${c.req.method}] ${c.req.path}`);
+  await next();
+});
+
 // All for all commands, get for only cors on get
 app.all(
   '*',
@@ -20,13 +25,15 @@ app.all(
 app.route('/api/auth', authRouter);
 // https://stackoverflow.com/questions/27301557/if-you-can-decode-jwt-how-are-they-secure
 // Below, you must be authenticated to access the routes
+
 app
   .use(
     jwt({
       secret: JWT_SECRET,
     })
   )
-  .onError((err, c) => {
+  .onError((_err, c) => {
+    console.log('AAA error', _err);
     return c.json({ error: 'Unauthorized' }, 401);
   });
 

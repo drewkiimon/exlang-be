@@ -1,13 +1,45 @@
 import { Hono } from 'hono';
 import { prisma } from '@prisma/prisma';
 import { createUser, isPasswordCorrect } from '@/services/authService';
-import { sign } from 'hono/jwt';
+import { sign, verify } from 'hono/jwt';
 import { JWT_SECRET } from '@/utils/secrets';
 
 const authRouter = new Hono();
 
+authRouter.post('/validate-token', async (c) => {
+  const token = c.req.header('Authorization')?.split(' ')[1];
+
+  if (!token) {
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
+
+  const verified = await verify(token, JWT_SECRET); // This just decodes; it doesn't validate integrity.
+
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { uuid: verified.userUuid as string },
+  });
+
+  return c.json(
+    {
+      token,
+      user: {
+        uuid: user.uuid,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+      },
+    },
+    200
+  );
+});
+
 authRouter.post('/sign-in', async (c) => {
   const { credentials } = await c.req.json();
+
+  if (!credentials) {
+    return c.json({ error: 'Credentials are required' }, 400);
+  }
 
   const [username, password] = atob(credentials).split(':');
 
@@ -19,7 +51,6 @@ authRouter.post('/sign-in', async (c) => {
   });
 
   if (!user) {
-    console.log('User not found');
     return c.json({ error: 'User not found' }, 404);
   }
 
@@ -30,7 +61,6 @@ authRouter.post('/sign-in', async (c) => {
   );
 
   if (!isPasswordValid) {
-    console.log('Invalid password');
     return c.json({ error: 'Invalid password' }, 401);
   }
 
@@ -45,7 +75,19 @@ authRouter.post('/sign-in', async (c) => {
     JWT_SECRET
   );
 
-  return c.json({ token }, 200);
+  return c.json(
+    {
+      token,
+      user: {
+        uuid: user.uuid,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+      },
+    },
+    200
+  );
 });
 
 authRouter.post('/sign-up', async (c) => {
@@ -90,7 +132,19 @@ authRouter.post('/sign-up', async (c) => {
     JWT_SECRET
   );
 
-  return c.json({ token }, 201);
+  return c.json(
+    {
+      token,
+      user: {
+        uuid: user.uuid,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+      },
+    },
+    201
+  );
 });
 
 export default authRouter;
