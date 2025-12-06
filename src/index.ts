@@ -14,6 +14,12 @@ app.all(
   })
 );
 
+app.get('/hello', (c) => {
+  return c.json({
+    message: `Hello!`,
+  });
+});
+
 app.route('/api/posts', postsRouter);
 
 serve(
