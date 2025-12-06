@@ -1,10 +1,10 @@
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
-
-import postsRouter from './routes/posts.js';
 import { cors } from 'hono/cors';
-import authRouter from './routes/auth.js';
-import { jwt, verify } from 'hono/jwt';
+import { jwt } from 'hono/jwt';
+
+import postsRouter from '@/routes/posts.js';
+import authRouter from '@/routes/auth.js';
 
 const app = new Hono();
 
@@ -17,7 +17,7 @@ app.all(
 );
 
 app.route('/api/auth', authRouter);
-
+// https://stackoverflow.com/questions/27301557/if-you-can-decode-jwt-how-are-they-secure
 // Below, you must be authenticated to access the routes
 app
   .use(

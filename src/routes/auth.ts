@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
 import { prisma } from '../../prisma/prisma';
-import { createUser } from '../services/authService';
+import { createUser } from '@/services/authService';
 import { sign } from 'hono/jwt';
+import { JWT_SECRET } from '@/utils/secrets';
 
 const authRouter = new Hono();
 
@@ -47,7 +48,7 @@ authRouter.post('/sign-up', async (c) => {
       lastName: user.lastName,
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
     },
-    'change_me_later_please'
+    JWT_SECRET
   );
 
   return c.json({ token }, 201);

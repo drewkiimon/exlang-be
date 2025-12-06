@@ -1,4 +1,5 @@
 import { jwt, sign, verify, decode } from 'hono/jwt';
+import { JWT_SECRET } from './utils/secrets';
 
 const test = async () => {
   //   const payload = {
@@ -15,7 +16,7 @@ const test = async () => {
 
   // Decode JWT payload using hono/jwt decode
   // Yes, you can decode a JWT without a secret because decode() only base64-decodes the payload, not verify the signature.
-  const verified = await verify(token, 'change_me_later_please'); // This just decodes; it doesn't validate integrity.
+  const verified = await verify(token, JWT_SECRET); // This just decodes; it doesn't validate integrity.
 
   /*
     - I create a JWT

@@ -1,6 +1,5 @@
 import { Hono } from 'hono';
-import { createPost, getPosts } from '../services/postsService';
-import { verify } from 'hono/jwt';
+import { createPost, getPosts } from '@/services/postsService';
 
 const postsRouter = new Hono();
 
