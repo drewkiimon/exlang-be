@@ -8,7 +8,7 @@
     "db-create": "prisma migrate dev --create-only",
     "db-migrate": "prisma migrate dev",
     "db-apply": "prisma migrate deploy",
-    "db-reset": "rm -rf generated/prisma; prisma migrate reset; tsx prisma/seed.ts"
+    "db-reset": "rm -rf generated/prisma && prisma generate && prisma migrate reset && tsx prisma/seed.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.6",
