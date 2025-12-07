@@ -6,6 +6,7 @@ import { jwt } from 'hono/jwt';
 import postsRouter from '@/routes/posts.js';
 import authRouter from '@/routes/auth.js';
 import { JWT_SECRET } from '@/utils/secrets';
+import usersRouter from '@/routes/users';
 
 const app = new Hono();
 
@@ -33,11 +34,11 @@ app
     })
   )
   .onError((_err, c) => {
-    console.log('AAA error', _err);
     return c.json({ error: 'Unauthorized' }, 401);
   });
 
 app.route('/api/posts', postsRouter);
+app.route('/api/users', usersRouter);
 
 serve(
   {

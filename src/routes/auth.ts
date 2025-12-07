@@ -15,20 +15,9 @@ authRouter.post('/validate-token', async (c) => {
 
   const verified = await verify(token, JWT_SECRET); // This just decodes; it doesn't validate integrity.
 
-  const user = await prisma.user.findUniqueOrThrow({
-    where: { uuid: verified.userUuid as string },
-  });
-
   return c.json(
     {
-      token,
-      user: {
-        uuid: user.uuid,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-      },
+      isValid: true,
     },
     200
   );
@@ -67,9 +56,6 @@ authRouter.post('/sign-in', async (c) => {
   const token = await sign(
     {
       userUuid: user.uuid,
-      username: user.username,
-      firstName: user.firstName,
-      lastName: user.lastName,
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
     },
     JWT_SECRET
@@ -78,13 +64,6 @@ authRouter.post('/sign-in', async (c) => {
   return c.json(
     {
       token,
-      user: {
-        uuid: user.uuid,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-      },
     },
     200
   );
@@ -124,9 +103,6 @@ authRouter.post('/sign-up', async (c) => {
   const token = await sign(
     {
       userUuid: user.uuid,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
     },
     JWT_SECRET
@@ -135,13 +111,6 @@ authRouter.post('/sign-up', async (c) => {
   return c.json(
     {
       token,
-      user: {
-        uuid: user.uuid,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-      },
     },
     201
   );
